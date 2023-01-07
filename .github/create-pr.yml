@@ -1,0 +1,36 @@
+name: Create Pull Request
+
+on:
+  push:
+    branches:
+      - my-branch
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the repository
+      - uses: actions/checkout@v2
+
+      # Create a new branch
+      - run: git branch my-branch
+
+      # Check out the new branch
+      - run: git checkout my-branch
+
+      # Make some changes and commit them
+      - run: |
+          echo "my change" > change.txt
+          git add change.txt
+          git commit -m "My change"
+
+      # Push the branch to the remote repository
+      - run: git push origin my-branch
+
+      # Create a new pull request
+      - uses: peter-evans/create-pull-request@v3
+        with:
+          title: My Pull Request
+          body: This is my pull request.
+          head: my-branch
+          base: master
