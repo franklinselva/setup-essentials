@@ -17,7 +17,7 @@ sudo sh -c 'echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `ls
 # Install ROS2 and dependencies
 sudo apt update
 sudo apt install -y \
-    ros-$distribution-desktop \
+    ros-$distribution-desktop-full \
     python3-argcomplete \
     build-essential \
     python3-colcon-common-extensions
