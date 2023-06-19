@@ -1,0 +1,10 @@
+ARG ROS_DISTRO=noetic
+FROM dorowu/ubuntu-desktop-lxde-vnc:latest
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN sed -i 's#http://archive.ubuntu.com/#http://tw.archive.ubuntu.com/#' /etc/apt/sources.list
+
+# Install ROS NOETIC
+RUN apt install -y wget curl
+RUN curl -s https://raw.githubusercontent.com/franklinselva/setup-essentials/main/ros/ros-noetic-install.sh | bash
