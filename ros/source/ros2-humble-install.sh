@@ -54,6 +54,8 @@ colcon build --symlink-install
 # Setup environment
 touch /opt/ros/humble/setup.bash
 echo "source /opt/ros/humble/install/setup.bash" >> /opt/ros/humble/setup.bash
+rm -rf /opt/ros/humble/build
+rm -rf /opt/ros/humble/src
 
 # Setup bashrc
 echo "source /opt/ros/humble/setup.bash" >> $HOME/.bashrc
