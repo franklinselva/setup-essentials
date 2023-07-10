@@ -40,7 +40,8 @@ python3 -m pip install -U \
 # Install ROS2 from source
 mkdir -p /opt/ros/humble/src
 cd /opt/ros/humble
-vcs import --input https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos src
+sudo apt install python3-rosinstall-generator python3-rospkg
+rosinstall_generator ros_base --deps --rosdistro humble | vcs pkg src
 
 #Install dependencies from rosdep
 sudo apt upgrade -y
@@ -49,12 +50,11 @@ rosdep update
 rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-6.0.1 urdfdom_headers"
 
 cd /opt/ros/humble
-colcon build --symlink-install
+colcon build --merge-install
 
 # Setup environment
 touch /opt/ros/humble/setup.bash
 echo "source /opt/ros/humble/install/setup.bash" >> /opt/ros/humble/setup.bash
-rm -rf /opt/ros/humble/build
 
 # Setup bashrc
 echo "source /opt/ros/humble/setup.bash" >> $HOME/.bashrc
