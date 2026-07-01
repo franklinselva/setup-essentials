@@ -46,7 +46,17 @@ if [ "$(dpkg --print-architecture)" != "arm64" ]; then
   echo "Warning: expected arm64 (Jetson). Detected: $(dpkg --print-architecture)."
 fi
 if [ "$USE_CUDA" = true ] && [ ! -x /usr/local/cuda/bin/nvcc ]; then
-  echo "Warning: /usr/local/cuda/bin/nvcc not found — CUDA build may fail. Use --no_cuda to disable."
+  echo "nvcc not found — installing CUDA toolkit from the JetPack apt repo."
+  sudo apt update
+  # Pick the newest cuda-toolkit-<major>-<minor> available (JetPack 7.x ships CUDA 13.x);
+  # avoids pinning a minor that drifts across point releases.
+  CUDA_PKG=$(apt-cache pkgnames cuda-toolkit-1 | sort -V | tail -1)
+  sudo apt install -y "${CUDA_PKG:-cuda-toolkit}"
+  if [ ! -x /usr/local/cuda/bin/nvcc ]; then
+    echo "Error: CUDA toolkit install did not provide /usr/local/cuda/bin/nvcc."
+    echo "Install JetPack CUDA (e.g. 'sudo apt install nvidia-jetpack') or rerun with --no_cuda."
+    exit 1
+  fi
 fi
 
 # --- Dependencies (no qtcreator; libudev-dev required for RSUSB backend) ---
