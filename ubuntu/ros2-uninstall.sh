@@ -9,18 +9,16 @@ fi
 # Set the ROS2 distribution
 distribution=$1
 
-# Remove the ROS2 packages
+# Remove the ROS 2 packages
 sudo apt remove -y \
-    ros-$distribution-desktop \
-    python3-argcomplete \
-    build-essential \
-    python3-colcon-common-extensions \
-    ros-$distribution-gazebo-ros-pkgs \
-    ros-$distribution-gazebo-ros-control
+    ros-$distribution-desktop-full \
+    ros-$distribution-ros-gz \
+    ros-dev-tools \
+    python3-argcomplete
 
-# Remove the ROS2 repository
-sudo rm /etc/apt/sources.list.d/ros2-latest.list
-sudo apt-key del 421C365BD9FF1F717815A3895523BAEEB01FA116
+# Remove the ROS 2 apt source (package + any leftover list)
+sudo apt purge -y ros2-apt-source || true
+sudo rm -f /etc/apt/sources.list.d/ros2.list /etc/apt/sources.list.d/ros2-latest.list
 
 # Update the package list and remove any leftover dependencies
 sudo apt update

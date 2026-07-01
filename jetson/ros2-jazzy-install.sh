@@ -4,7 +4,7 @@
 # https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html
 #
 # Usage (curl one-liner):
-#   bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/ros/ros2-jazzy-jetson-install.sh)
+#   bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/jetson/ros2-jazzy-install.sh)
 
 set -euo pipefail
 

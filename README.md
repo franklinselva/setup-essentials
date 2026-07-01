@@ -1,41 +1,58 @@
 # setup-essentials
 
-Curl-able setup scripts for dev machines and Jetson boards.
+Simple one-line installers to get a fresh **NVIDIA Jetson** or **Ubuntu** machine
+ready for robotics work — ROS 2, cameras, Docker, OpenCV — without hunting through
+scattered guides.
 
-## Jetson (JetPack 7.x / Ubuntu 24.04, arm64)
+## Get started
 
-| Script | Installs | Method |
-|--------|----------|--------|
-| `jetson/ros2-jazzy-install.sh` | ROS 2 Jazzy desktop | apt binary, `ros-jazzy-desktop` + `ros-dev-tools` |
-| `jetson/install-librealsense.sh` | Intel RealSense SDK 2.0 | Source build, RSUSB backend + CUDA |
-| `jetson/install-docker.sh` | Docker Engine + NVIDIA Container Toolkit | Docker apt repo + `nvidia-container-toolkit`, nvidia default runtime |
+Open a terminal and run:
 
 ```bash
-# ROS 2 Jazzy
-bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/jetson/ros2-jazzy-install.sh)
-
-# librealsense
-bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/jetson/install-librealsense.sh)
-
-# Docker + NVIDIA Container Toolkit
-bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/jetson/install-docker.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/install.sh)
 ```
 
-- **Jazzy** requires Ubuntu 24.04 (noble) = JetPack 7.x; the script aborts on any other codename. Uses the `ros2-apt-source` package (auto-updating apt source); the old `apt-key` method is removed (deprecated since Ubuntu 22.04).
-- **RealSense** builds from source (`realsenseai/librealsense`) with the RSUSB backend — no kernel patch or DKMS, since the L4T kernel is not a mainline Ubuntu kernel. CUDA on by default (`--no_cuda` to disable).
-- **Docker** comes from Docker's official apt repo (not snap — the snap build breaks the NVIDIA runtime) plus `nvidia-container-toolkit`; nvidia is set as the default runtime so containers get GPU/CUDA without `--runtime nvidia`.
+You'll see a menu — type the number of what you want to install and press Enter. That's it.
 
-## ROS 2 (generic Ubuntu)
+Prefer to skip the menu? Add the name of what you want to the same command:
 
-| Script | Target | Method |
-|--------|--------|--------|
-| `ros/ros2-install.sh <distro>` | Any Ubuntu with matching ROS 2 distro | apt binary, `desktop-full` + `ros_gz` |
-| `ros/source/ros2-humble-install.sh` | Build Humble from source | colcon |
-| `ros/ros-noetic-install.sh` | ROS 1 Noetic | apt binary |
+```bash
+# Install Docker on a Jetson
+bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/install.sh) jetson-docker
 
-## Sensors / IO
+# Install ROS 2 Jazzy on regular Ubuntu
+bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/install.sh) ubuntu-ros2 jazzy
+```
 
-| Script | Target | Method |
-|--------|--------|--------|
-| `io/realsense/build-librealsense.sh` | Jetson Nano (legacy, JetsonHacks) | Source build |
-| `io/build-depthai.sh` | DepthAI / OAK cameras | — |
+## What you can install
+
+### On a Jetson (JetPack 7.x / Ubuntu 24.04)
+
+| Type this | What it sets up |
+|-----------|-----------------|
+| `jetson-ros2` | ROS 2 Jazzy (the robot software framework), ready to use |
+| `jetson-realsense` | Intel RealSense depth camera support, with GPU acceleration |
+| `jetson-docker` | Docker with GPU access — run containers that use the Jetson's CUDA |
+
+### On any Ubuntu machine
+
+| Type this | What it sets up |
+|-----------|-----------------|
+| `ubuntu-ros2 <version>` | ROS 2 for your Ubuntu (e.g. `ubuntu-ros2 jazzy`), with Gazebo |
+| `ubuntu-ros2-uninstall <version>` | Removes a ROS 2 install |
+| `ubuntu-ros2-humble-src` | Builds ROS 2 Humble from source |
+| `ubuntu-depthai` | Luxonis / OAK camera support |
+| `ubuntu-opencv` | OpenCV (computer vision library), latest version |
+
+## Good to know
+
+- **Jetson ROS 2** needs JetPack 7.x (Ubuntu 24.04). The installer checks this and stops early with a clear message if your board is on an older JetPack.
+- **RealSense cameras** work straight after install — just unplug and replug the camera once so the permissions take effect.
+- **Docker** is set up so containers can use the GPU automatically. Log out and back in once so you can run `docker` without `sudo`.
+- **OpenCV** installs the newest release by default. If your project needs the older 4.x line, add `--version 4.11.0`. Add `--cuda` for GPU support (Jetson or a CUDA machine).
+
+Each installer prints what to do next when it finishes.
+
+---
+
+<sub>Layout: `jetson/` and `ubuntu/` hold the installers, `common/` holds shared bits (camera rules, a license-header helper), and `install.sh` is the menu that ties them together.</sub>
