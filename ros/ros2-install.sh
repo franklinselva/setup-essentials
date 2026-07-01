@@ -9,23 +9,25 @@ fi
 # Set the ROS2 distribution
 distribution=$1
 
-# Add the ROS2 repository
-sudo apt update && sudo apt install -y curl
-curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-sudo sh -c 'echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list'
+# Enable the Universe repository
+sudo apt update && sudo apt install -y curl software-properties-common
+sudo add-apt-repository -y universe
 
-# Install ROS2 and dependencies
+# Add the ROS 2 apt source (auto-updating repo config via ros2-apt-source .deb)
+ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
+curl -L -o /tmp/ros2-apt-source.deb \
+    "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo "$VERSION_CODENAME")_all.deb"
+sudo dpkg -i /tmp/ros2-apt-source.deb
+
+# Install ROS 2 and dependencies
 sudo apt update
 sudo apt install -y \
     ros-$distribution-desktop-full \
-    python3-argcomplete \
-    build-essential \
-    python3-colcon-common-extensions
+    ros-dev-tools \
+    python3-argcomplete
 
-# Install Gazebo
-sudo apt install -y \
-    ros-$distribution-gazebo-ros-pkgs \
-    ros-$distribution-gazebo-ros-control
+# Install Gazebo (Harmonic via ros_gz for Jazzy+; classic Gazebo is EOL)
+sudo apt install -y ros-$distribution-ros-gz
 
 # Initialize the ROS2 environment
 echo "source /opt/ros/$distribution/setup.bash" >> ~/.bashrc
