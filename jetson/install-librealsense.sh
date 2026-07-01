@@ -10,7 +10,7 @@
 # Usage:
 #   ./install-librealsense-jetson.sh [-n|--no_cuda] [-v|--version <tag>] [-j|--jobs <n>]
 # Curl one-liner:
-#   bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/io/realsense/install-librealsense-jetson.sh)
+#   bash <(curl -sSL https://raw.githubusercontent.com/franklinselva/setup-essentials/main/jetson/install-librealsense.sh)
 
 set -euo pipefail
 
@@ -54,6 +54,7 @@ sudo apt update
 sudo apt install -y \
   git cmake build-essential pkg-config \
   libssl-dev libusb-1.0-0-dev libudev-dev \
+  v4l-utils libv4l-dev \
   libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev \
   python3 python3-dev python3-pip
 
@@ -69,8 +70,11 @@ fi
 echo "Building librealsense $VERSION (CUDA: $USE_CUDA)"
 git checkout "$VERSION"
 
-# --- udev rules (user-space device access) ---
+# --- udev rules: user-space USB access for the camera ---
 ./scripts/setup_udev_rules.sh
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+sudo usermod -aG plugdev "$USER"
 
 # --- Build (RSUSB backend, no kernel patch) ---
 mkdir -p build && cd build
@@ -107,3 +111,4 @@ fi
 
 echo "librealsense $VERSION installed to /usr/local (lib, include, bin)."
 echo "Run 'realsense-viewer' to verify. Reconnect the camera so udev rules apply."
+echo "Log out and back in for plugdev group membership to take effect."
